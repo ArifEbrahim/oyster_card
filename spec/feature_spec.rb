@@ -29,18 +29,19 @@ RSpec.describe 'user stories - ' do
   # In order to pay for my journey
   # As a customer
   # I need my fare deducted from my card
-  it 'should be able to deduct from the balance' do
-    card = Oystercard.new
-    card.top_up(50)
-    card.deduct(10)
-    expect(card.balance).to eq 40
-  end
+  # it 'should be able to deduct from the balance' do
+  #   card = Oystercard.new
+  #   card.top_up(50)
+  #   card.deduct(10)
+  #   expect(card.balance).to eq 40
+  # end
 
   # In order to get through the barriers.
   # As a customer
   # I need to touch in and out.
   it 'should allow users to touch in' do
     card = Oystercard.new
+    card.top_up(1)
     card.touch_in
     expect(card.in_journey).to eq true
   end
@@ -49,6 +50,24 @@ RSpec.describe 'user stories - ' do
     card = Oystercard.new
     card.touch_out
     expect(card.in_journey).to eq false
+  end
+
+  # In order to pay for my journey
+  # As a customer
+  # I need to have the minimum amount (£1) for a single journey.
+  it 'should stop users with less than the minimum balance' do
+    card = Oystercard.new
+    expect { card.touch_in }.to raise_error "Insufficient funds"
+  end
+
+  # In order to pay for my journey
+  # As a customer
+  # When my journey is complete, I need the correct amount deducted from my card
+  it 'should deduct the correct amount from the card' do
+    card = Oystercard.new
+    card.top_up(10)
+    card.touch_out
+    expect(card.balance).to eq 8
   end
 
 end

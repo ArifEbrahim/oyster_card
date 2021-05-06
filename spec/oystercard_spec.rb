@@ -17,23 +17,26 @@ RSpec.describe Oystercard do
     end
   end
 
-  describe '#deduct' do
-    it 'reduces the balance by a given amount' do
-      expect { subject.deduct(5) }.to change{ subject.balance }.by -5
-    end
-  end
-
-  describe "#touch_in" do
-    it "allows users to touch in" do
+  describe '#touch_in' do
+    it 'allows users to touch in' do
+      subject.top_up(Oystercard::BALANCE_LIMIT)
       subject.touch_in
       expect(subject.in_journey).to be true
     end
+
+    it 'stops people with insufficient balance' do
+      expect { subject.touch_in}.to raise_error "Insufficient funds"
+    end
   end
 
-  describe "#touch_out" do
-    it "allows users to touch out" do
+  describe '#touch_out' do
+    it 'allows users to touch out' do
       subject.touch_out
       expect(subject.in_journey).to be false
+    end
+
+    it 'should deduct the minimum on touch out' do
+      expect { subject.touch_out }.to change {subject.balance}.by -Oystercard::MINIMUM_FARE
     end
   end
 end
