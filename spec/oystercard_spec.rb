@@ -22,4 +22,18 @@ RSpec.describe Oystercard do
       expect { subject.deduct(5) }.to change{ subject.balance }.by -5
     end
   end
+
+  describe "#touch_in" do
+    it "allows users to touch in" do
+      subject.touch_in
+      expect(subject.in_journey).to be true
+    end
+  end
+
+  describe "#touch_out" do
+    it "allows users to touch out" do
+      subject.touch_out
+      expect(subject.in_journey).to be false
+    end
+  end
 end

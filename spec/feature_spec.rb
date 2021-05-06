@@ -36,4 +36,19 @@ RSpec.describe 'user stories - ' do
     expect(card.balance).to eq 40
   end
 
+  # In order to get through the barriers.
+  # As a customer
+  # I need to touch in and out.
+  it 'should allow users to touch in' do
+    card = Oystercard.new
+    card.touch_in
+    expect(card.in_journey).to eq true
+  end
+
+  it 'should allow users to touch out' do
+    card = Oystercard.new
+    card.touch_out
+    expect(card.in_journey).to eq false
+  end
+
 end
