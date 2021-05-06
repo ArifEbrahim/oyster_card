@@ -26,4 +26,14 @@ RSpec.describe 'user stories - ' do
     expect{ card.top_up(95) }.to raise_error "Maximum balance of £90 exceeded"
   end
 
+  # In order to pay for my journey
+  # As a customer
+  # I need my fare deducted from my card
+  it 'should be able to deduct from the balance' do
+    card = Oystercard.new
+    card.top_up(50)
+    card.deduct(10)
+    expect(card.balance).to eq 40
+  end
+
 end
