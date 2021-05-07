@@ -1,6 +1,7 @@
 require 'oystercard'
 
 RSpec.describe Oystercard do
+  let (:station) {double :station}
   it 'should have an initial balance of 0'  do
     expect(subject.balance).to eq(0)
   end
@@ -20,12 +21,12 @@ RSpec.describe Oystercard do
   describe '#touch_in' do
     it 'allows users to touch in' do
       subject.top_up(Oystercard::BALANCE_LIMIT)
-      subject.touch_in
+      subject.touch_in(station)
       expect(subject.in_journey).to be true
     end
 
     it 'stops people with insufficient balance' do
-      expect { subject.touch_in}.to raise_error "Insufficient funds"
+      expect { subject.touch_in(station) }.to raise_error "Insufficient funds"
     end
   end
 
@@ -37,6 +38,14 @@ RSpec.describe Oystercard do
 
     it 'should deduct the minimum on touch out' do
       expect { subject.touch_out }.to change {subject.balance}.by -Oystercard::MINIMUM_FARE
+    end
+  end
+
+  describe "journey" do
+    it 'should remember the entry station' do
+      subject.top_up(Oystercard::BALANCE_LIMIT)
+      subject.touch_in(station)
+      expect(subject.entry_station).to eq(station)
     end
   end
 end
