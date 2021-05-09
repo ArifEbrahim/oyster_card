@@ -1,7 +1,8 @@
 require 'oystercard'
 
 RSpec.describe Oystercard do
-  let (:station) {double :station}
+  let (:entry_station) {double :entry_station}
+  let (:exit_station) {double :exit_station}
   it 'should have an initial balance of 0'  do
     expect(subject.balance).to eq(0)
   end
@@ -21,31 +22,44 @@ RSpec.describe Oystercard do
   describe '#touch_in' do
     it 'allows users to touch in' do
       subject.top_up(Oystercard::BALANCE_LIMIT)
-      subject.touch_in(station)
+      subject.touch_in(entry_station)
       expect(subject.in_journey).to be true
     end
 
     it 'stops people with insufficient balance' do
-      expect { subject.touch_in(station) }.to raise_error "Insufficient funds"
+      expect { subject.touch_in(entry_station) }.to raise_error "Insufficient funds"
     end
   end
 
   describe '#touch_out' do
     it 'allows users to touch out' do
-      subject.touch_out
+      subject.touch_out(exit_station)
       expect(subject.in_journey).to be false
     end
 
     it 'should deduct the minimum on touch out' do
-      expect { subject.touch_out }.to change {subject.balance}.by -Oystercard::MINIMUM_FARE
+      expect { subject.touch_out(exit_station) }.to change {subject.balance}.by -Oystercard::MINIMUM_FARE
     end
   end
 
   describe "journey" do
     it 'should remember the entry station' do
       subject.top_up(Oystercard::BALANCE_LIMIT)
-      subject.touch_in(station)
-      expect(subject.entry_station).to eq(station)
+      subject.touch_in(entry_station)
+      expect(subject.entry_station).to eq(entry_station)
     end
+
+    let (:journey) { {entry_station: entry_station, exit_station: exit_station} }
+    it "should remember all trips made by the user" do
+      subject.top_up(Oystercard::BALANCE_LIMIT)
+      subject.touch_in(entry_station)
+      subject.touch_out(exit_station)
+      expect(subject.journeys).to include journey
+    end
+
+    it "should start with an empty journey record" do
+      expect(subject.journeys).to be_empty
+    end
+
   end
 end

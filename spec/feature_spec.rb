@@ -1,7 +1,9 @@
 require 'oystercard'
+require 'station'
 
 RSpec.describe 'user stories - ' do
-  let (:station) {double :station}
+  let (:entry_station) {double :entry_station}
+  let (:exit_station) {double :exit_station}
   # In order to use public transport
   # As a customer
   # I want money on my card
@@ -43,13 +45,13 @@ RSpec.describe 'user stories - ' do
   it 'should allow users to touch in' do
     card = Oystercard.new
     card.top_up(1)
-    card.touch_in(station)
+    card.touch_in(entry_station)
     expect(card.in_journey).to eq true
   end
 
   it 'should allow users to touch out' do
     card = Oystercard.new
-    card.touch_out
+    card.touch_out(exit_station)
     expect(card.in_journey).to eq false
   end
 
@@ -58,7 +60,7 @@ RSpec.describe 'user stories - ' do
   # I need to have the minimum amount (£1) for a single journey.
   it 'should stop users with less than the minimum balance' do
     card = Oystercard.new
-    expect { card.touch_in(station) }.to raise_error "Insufficient funds"
+    expect { card.touch_in(entry_station) }.to raise_error "Insufficient funds"
   end
 
   # In order to pay for my journey
@@ -67,7 +69,7 @@ RSpec.describe 'user stories - ' do
   it 'should deduct the correct amount from the card' do
     card = Oystercard.new
     card.top_up(10)
-    card.touch_out
+    card.touch_out(exit_station)
     expect(card.balance).to eq 8
   end
 
@@ -76,10 +78,30 @@ RSpec.describe 'user stories - ' do
   # I need to know where I've travelled from
   it 'should remember the entry station' do
     card = Oystercard.new
-    station = double(:station)
     card.top_up(10)
-    card.touch_in(station)
-    expect(card.entry_station).to eq(station)
+    card.touch_in(entry_station)
+    expect(card.entry_station).to eq(entry_station)
   end
+
+  # In order to know where I have been
+  # As a customer
+  # I want to see all my previous trips
+  it 'should remember all trips made by a user' do
+    card = Oystercard.new
+    card.top_up(10)
+    card.touch_in(entry_station)
+    card.touch_out(exit_station)
+    expect(card.journeys.length).to eq(1)
+  end
+
+  # In order to know how far I have travelled
+  # As a customer
+  # I want to know what zone a station is in
+  it 'stations should have a name and zone' do
+    station = Station.new("Victoria", 2)
+    expect(station.zone).to eq 2
+    expect(station.name).to eq("Victoria")
+  end
+
 
 end
