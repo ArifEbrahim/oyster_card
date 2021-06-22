@@ -10,7 +10,7 @@ RSpec.describe Journey do
     expect(subject.entry_station).to eq(entry_station)
   end
 
-  it 'should remember the entry station' do
+  it 'should remember the exit station' do
     subject.touch_out(exit_station)
     expect(subject.exit_station).to eq(exit_station)
   end
