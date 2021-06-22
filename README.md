@@ -74,7 +74,7 @@ An oyster card allows users to:
 ## Testing
 
 All testing was completed in RSpec, a screenshot of the output is below:
-![tests](./images/tests.png)
+![tests](./images/spec_tests.png)
 
 ## User stories
 
